@@ -7,7 +7,7 @@
 
 ## 1. Pitch de apertura (~2 min)
 
-"Argentina registra alrededor de 4.000 muertes viales por anio. Este proyecto
+"Argentina registra alrededor de 4.000 muertes viales por año. Este proyecto
 usa datos abiertos de la Ciudad de Buenos Aires -65.818 siniestros entre 2019
 y 2025- para responder dos preguntas: que condiciones hacen mas letal a un
 siniestro, y es posible anticiparlo con machine learning.
@@ -15,9 +15,9 @@ siniestro, y es posible anticiparlo con machine learning.
 El pipeline integra tres fuentes publicas: hechos de siniestros, registro por
 victima y clima diario. Con ese dataset se entrenaron cuatro clasificadores,
 con validacion temporal: los modelos aprenden de 2019-2023 y son evaluados
-sobre 2025, un anio que nunca vieron.
+sobre 2025, un año que nunca vieron.
 
-Resultado principal: el modelo detecta ~19% de los siniestros fatales del anio
+Resultado principal: el modelo detecta ~19% de los siniestros fatales del año
 siguiente con precision 13 veces superior al azar, y el analisis interpretable
 muestra que lo que mas predice la gravedad no es la via ni el clima, sino el
 perfil de la victima: peatones y motociclistas."
@@ -49,7 +49,7 @@ Incluimos ademas un DummyClassifier como referencia explicita.
 R: Dos razones. Primera, honestidad: el modelo se usaria para predecir el
 futuro, no el pasado remezclado. Segunda, evidencia: al comparar, las metricas
 con split aleatorio eran notablemente mejores (AUC-PR 0.14 vs 0.074); esa caida
-es el costo real de generalizar a un anio no visto. Reportar solo el numero
+es el costo real de generalizar a un año no visto. Reportar solo el numero
 optimista seria enganoso.
 
 **P: Como eligieron el umbral de decision? No es trampa ajustarlo?**
@@ -118,7 +118,7 @@ evidencia dentro del propio proyecto.
 **P: Limitaciones principales?**
 R: (1) Solo CABA: no extrapolamos al pais sin armonizar con LUCHAS. (2)
 Precision baja para uso individual: es un ranking de riesgo, no un oraculo.
-(3) Posible sesgo de reporte entre jurisdicciones/anios. (4) MNAR discutido
+(3) Posible sesgo de reporte entre jurisdicciones/años. (4) MNAR discutido
 antes. (5) Variables que no tenemos: densidad de trafico, infraestructura vial,
 alcoholemia.
 

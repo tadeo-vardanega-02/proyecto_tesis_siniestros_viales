@@ -11,6 +11,7 @@ Fuentes:
 Las URLs se centralizan en DATA_SOURCES: si una fuente cambia su endpoint,
 actualizar solo ese diccionario.
 """
+
 from __future__ import annotations
 
 import sys
@@ -30,7 +31,7 @@ DATA_SOURCES: dict[str, str] = {
     "caba_hechos": "https://cdn.buenosaires.gob.ar/datosabiertos/datasets/transporte-y-obras-publicas/victimas-siniestros-viales/siniestros_viales_hechos.csv",
 }
 
-# Clima: punto representativo de CABA + rango que cubre los anios del dataset.
+# Clima: punto representativo de CABA + rango que cubre los años del dataset.
 OPEN_METEO_URL = "https://archive-api.open-meteo.com/v1/archive"
 CLIMA_PARAMS: dict = {
     "latitude": -34.61,
@@ -91,8 +92,7 @@ def download_climate() -> Path | None:
     try:
         for start, end in CLIMA_CHUNKS:
             params = dict(CLIMA_PARAMS, start_date=start, end_date=end)
-            resp = requests.get(OPEN_METEO_URL, params=params,
-                                timeout=TIMEOUT_SECONDS)
+            resp = requests.get(OPEN_METEO_URL, params=params, timeout=TIMEOUT_SECONDS)
             resp.raise_for_status()
             daily = resp.json()["daily"]
             frames.append(pd.DataFrame(daily))

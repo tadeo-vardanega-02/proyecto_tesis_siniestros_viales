@@ -120,7 +120,7 @@ Con validacion temporal (train <=2023, val 2024, test 2025):
 - La regresion logistica degrada mas en el tiempo: las relaciones lineales
   fijas de 2019-2023 generalizan peor que los arboles.
 - Comparado con el split aleatorio anterior, todas las metricas bajan: es el
-  costo honesto de predecir un anio futuro no visto.
+  costo honesto de predecir un año futuro no visto.
 
 ### 4.2 Interpretabilidad (SHAP sobre HGB, test 2025)
 Variables de mayor impacto medio |SHAP|:
@@ -161,7 +161,7 @@ Variables de mayor impacto medio |SHAP|:
 
 ### 6.1 Conclusiones tecnicas
 1. Es posible anticipar la gravedad de un siniestro con senal estadistica
-   clara: HGB logra AUC-ROC 0,89 y detecta ~19% de los fatales del anio
+   clara: HGB logra AUC-ROC 0,89 y detecta ~19% de los fatales del año
    siguiente con precision 13x superior al azar.
 2. El perfil de la victima (modo de transporte, edad) domina sobre
    infraestructura y clima: la vulnerabilidad del cuerpo, no el entorno,

@@ -10,6 +10,7 @@ Pasos:
     3. Curvas Precision-Recall comparativas.
     4. Interpretabilidad: importancia por permutacion.
 """
+
 from __future__ import annotations
 
 import sys
@@ -24,6 +25,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.inspection import permutation_importance
 from sklearn.metrics import (
     average_precision_score,
     classification_report,
@@ -32,7 +34,6 @@ from sklearn.metrics import (
     precision_recall_curve,
     roc_auc_score,
 )
-from sklearn.inspection import permutation_importance
 
 matplotlib.use("Agg")
 
@@ -40,7 +41,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MODELS_DIR = PROJECT_ROOT / "models"
 FIGURES_DIR = PROJECT_ROOT / "reports" / "figures"
 RANDOM_STATE = 42
-DROP_COLS = ["latitud", "longitud", "id", "fecha", "anio", "gravedad"]
+DROP_COLS = ["latitud", "longitud", "id", "fecha", "año", "gravedad"]
 
 
 def load_splits():
@@ -118,8 +119,7 @@ def tune_threshold(name: str, X_val, y_val, plot: bool = True) -> float:
         ax.plot(thresholds, f1_fatal[:-1], label="F1 clase fatal")
         ax.plot(thresholds, prec[:-1], "--", alpha=0.6, label="Precision")
         ax.plot(thresholds, rec[:-1], "--", alpha=0.6, label="Recall")
-        ax.axvline(best_thr, color="red", ls=":",
-                   label=f"Optimo={best_thr:.3f}")
+        ax.axvline(best_thr, color="red", ls=":", label=f"Optimo={best_thr:.3f}")
         ax.set_xlabel("Umbral de decision")
         ax.set_ylabel("Metrica")
         ax.set_title(f"Ajuste de umbral: {name} (set de validacion)")
@@ -131,8 +131,7 @@ def tune_threshold(name: str, X_val, y_val, plot: bool = True) -> float:
         plt.close(fig)
         print(f"Grafico de umbrales guardado en {dest}")
 
-    print(f"[{name}] umbral optimo (F1 fatal): {best_thr:.3f} "
-          f"(default=0.500)")
+    print(f"[{name}] umbral optimo (F1 fatal): {best_thr:.3f} (default=0.500)")
     return best_thr
 
 
@@ -149,8 +148,13 @@ def plot_pr_curves(names: list[str], X_test, y_test) -> None:
         plt.plot(rec, prec, label=f"{name} (AP={ap:.3f})")
     # Piso teorico: prevalencia de la clase positiva
     prevalence = float(np.mean(y_test))
-    plt.axhline(prevalence, color="gray", ls=":", lw=1,
-                label=f"Piso (prevalencia={prevalence:.3f})")
+    plt.axhline(
+        prevalence,
+        color="gray",
+        ls=":",
+        lw=1,
+        label=f"Piso (prevalencia={prevalence:.3f})",
+    )
     plt.xlabel("Recall")
     plt.ylabel("Precision")
     plt.title("Precision-Recall: clase fatal (desbalanceada)")
@@ -168,8 +172,9 @@ def feature_importance(name: str, X_test, y_test, top_n: int = 15) -> None:
         return
     bundle = joblib.load(path)
     pipe, cols = bundle["pipeline"], bundle["X_columns"]
-    result = permutation_importance(pipe, X_test, y_test, n_repeats=5,
-                                    random_state=RANDOM_STATE, n_jobs=-1)
+    result = permutation_importance(
+        pipe, X_test, y_test, n_repeats=5, random_state=RANDOM_STATE, n_jobs=-1
+    )
     order = np.argsort(result.importances_mean)[::-1][:top_n]
     print(f"\nTop variables ({name}):")
     for i in order:

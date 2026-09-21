@@ -1,4 +1,4 @@
-﻿id_siniestro;fecha_siniestro;anio_siniestro;modo_desplazamiento_victima;sexo_victima;edad_victima;GRAVEdad_victima;rol_victima;fecha_fallecimiento_victima
+﻿id_siniestro;fecha_siniestro;año_siniestro;modo_desplazamiento_victima;sexo_victima;edad_victima;GRAVEdad_victima;rol_victima;fecha_fallecimiento_victima
 LC-2019-0022650;2019-01-11;2019;BICICLETA;F;25;GRAVE;CICLISTA;
 LC-2019-0068291;2019-02-01;2019;BICICLETA;F;16;GRAVE;CICLISTA;
 LC-2019-0139186;2019-03-06;2019;BICICLETA;F;32;GRAVE;CICLISTA;

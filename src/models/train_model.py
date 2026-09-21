@@ -9,15 +9,14 @@ Modelos:
 El problema esta desbalanceado; se usa class_weight='balanced' y las
 metricas se calculan en evaluate.py.
 """
+
 from __future__ import annotations
 
-import joblib
-import numpy as np
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
 
-
+import joblib
+import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import HistGradientBoostingClassifier
@@ -33,7 +32,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 MODELS_DIR = PROJECT_ROOT / "models"
 RANDOM_STATE = 42
-DROP_COLS = ["latitud", "longitud", "id", "fecha", "anio", "gravedad"]
+DROP_COLS = ["latitud", "longitud", "id", "fecha", "año", "gravedad"]
 
 
 def load_dataset() -> pd.DataFrame:
@@ -47,49 +46,92 @@ def load_dataset() -> pd.DataFrame:
 
 def make_preprocessor(X: pd.DataFrame) -> ColumnTransformer:
     cat_cols = [
-        c for c in X.columns
-        if str(X[c].dtype) in ("object", "category", "str")
+        c for c in X.columns if str(X[c].dtype) in ("object", "category", "str")
     ]
     num_cols = [c for c in X.columns if c not in cat_cols]
     return ColumnTransformer(
         [
-            ("num", Pipeline([
-                ("imputer", SimpleImputer(strategy="median")),
-                ("scaler", StandardScaler()),
-            ]), num_cols),
-            ("cat", Pipeline([
-                ("imputer", SimpleImputer(strategy="most_frequent")),
-                ("onehot", OneHotEncoder(handle_unknown="ignore",
-                                         min_frequency=0.01,
-                                         sparse_output=False)),
-            ]), cat_cols),
+            (
+                "num",
+                Pipeline(
+                    [
+                        ("imputer", SimpleImputer(strategy="median")),
+                        ("scaler", StandardScaler()),
+                    ]
+                ),
+                num_cols,
+            ),
+            (
+                "cat",
+                Pipeline(
+                    [
+                        ("imputer", SimpleImputer(strategy="most_frequent")),
+                        (
+                            "onehot",
+                            OneHotEncoder(
+                                handle_unknown="ignore",
+                                min_frequency=0.01,
+                                sparse_output=False,
+                            ),
+                        ),
+                    ]
+                ),
+                cat_cols,
+            ),
         ]
     )
 
 
 def build_models() -> dict[str, Pipeline]:
     return {
-        "dummy": Pipeline([
-            ("pre", None),
-            ("clf", DummyClassifier(strategy="stratified",
-                                    random_state=RANDOM_STATE)),
-        ]),
-        "logreg": Pipeline([
-            ("pre", None),
-            ("clf", LogisticRegression(max_iter=1000, class_weight="balanced",
-                                       random_state=RANDOM_STATE)),
-        ]),
-        "hgb": Pipeline([
-            ("pre", None),
-            ("clf", HistGradientBoostingClassifier(
-                random_state=RANDOM_STATE, class_weight="balanced")),
-        ]),
+        "dummy": Pipeline(
+            [
+                ("pre", None),
+                (
+                    "clf",
+                    DummyClassifier(strategy="stratified", random_state=RANDOM_STATE),
+                ),
+            ]
+        ),
+        "logreg": Pipeline(
+            [
+                ("pre", None),
+                (
+                    "clf",
+                    LogisticRegression(
+                        max_iter=1000,
+                        class_weight="balanced",
+                        random_state=RANDOM_STATE,
+                    ),
+                ),
+            ]
+        ),
+        "hgb": Pipeline(
+            [
+                ("pre", None),
+                (
+                    "clf",
+                    HistGradientBoostingClassifier(
+                        random_state=RANDOM_STATE, class_weight="balanced"
+                    ),
+                ),
+            ]
+        ),
         # Comparacion opcional con deep learning
-        "mlp": Pipeline([
-            ("pre", None),
-            ("clf", MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=300,
-                                  early_stopping=True, random_state=RANDOM_STATE)),
-        ]),
+        "mlp": Pipeline(
+            [
+                ("pre", None),
+                (
+                    "clf",
+                    MLPClassifier(
+                        hidden_layer_sizes=(64, 32),
+                        max_iter=300,
+                        early_stopping=True,
+                        random_state=RANDOM_STATE,
+                    ),
+                ),
+            ]
+        ),
     }
 
 
@@ -99,8 +141,7 @@ def train(models: dict[str, Pipeline] | None = None) -> dict[str, float]:
     df = load_dataset()
     train_df, _, _ = temporal_split(df)
     y_train = train_df.pop("target")
-    X_train = train_df.drop(
-        columns=[c for c in DROP_COLS if c in train_df.columns])
+    X_train = train_df.drop(columns=[c for c in DROP_COLS if c in train_df.columns])
 
     if models is None:
         models = build_models()
@@ -117,8 +158,10 @@ def train(models: dict[str, Pipeline] | None = None) -> dict[str, float]:
 
     MODELS_DIR.mkdir(exist_ok=True)
     for name, pipe in models.items():
-        joblib.dump({"pipeline": pipe, "X_columns": list(X_train.columns)},
-                    MODELS_DIR / f"{name}.joblib")
+        joblib.dump(
+            {"pipeline": pipe, "X_columns": list(X_train.columns)},
+            MODELS_DIR / f"{name}.joblib",
+        )
     print(f"\nModelos guardados en {MODELS_DIR}")
     return results
 
